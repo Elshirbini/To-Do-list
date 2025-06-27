@@ -50,6 +50,7 @@ export class TaskController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard)
   remove(@Req() req: FastifyRequest, @Param('id') id: string) {
     return this.taskService.remove(req, id);
   }

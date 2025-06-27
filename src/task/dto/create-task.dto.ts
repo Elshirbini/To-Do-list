@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 
 export class CreateTaskDto {
+  @IsOptional()
   user_id?: string;
 
   @IsNotEmpty()
@@ -26,5 +27,6 @@ export class CreateTaskDto {
   @IsArray()
   tags: string[];
 
+  @IsOptional()
   isPinned?: boolean;
 }

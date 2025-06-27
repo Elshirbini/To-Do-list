@@ -27,8 +27,12 @@ export class TaskService {
   }
 
   async findAll(req: FastifyRequest) {
-    const tasks = await this.taskRepo.findBy({
-      user_id: req.userId,
+    const tasks = await this.taskRepo.find({
+      where: { user_id: req.userId },
+      order: {
+        isPinned: 'DESC',
+        createdAt: 'DESC',
+      },
     });
     if (tasks.length === 0) throw new NotFoundException('Task not found');
 
@@ -68,7 +72,7 @@ export class TaskService {
       user_id: req.userId,
     });
     if (result.affected === 0) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Task not found');
     }
     return { status: 'success', message: 'Task deleted', data: null };
   }

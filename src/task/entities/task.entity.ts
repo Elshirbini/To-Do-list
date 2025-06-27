@@ -30,7 +30,7 @@ export class Task {
   @Column('simple-array')
   tags: string[];
 
-  @Column()
+  @Column({ default: false })
   isPinned: boolean;
 
   @CreateDateColumn()
