@@ -12,6 +12,7 @@ import {
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
+  @Index()
   user_id: string;
 
   @Column()

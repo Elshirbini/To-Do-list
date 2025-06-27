@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -12,6 +13,7 @@ import {
 @Entity('tasks')
 export class Task {
   @PrimaryGeneratedColumn('uuid')
+  @Index()
   task_id: string;
 
   @ManyToOne(() => User, (user) => user.tasks, { onDelete: 'CASCADE' })
@@ -19,6 +21,7 @@ export class Task {
   user: User;
 
   @Column('uuid')
+  @Index()
   user_id: string;
 
   @Column({ length: 200 })
