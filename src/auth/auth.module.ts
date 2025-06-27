@@ -1,17 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { RedisModule } from 'src/redis/redis.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GoogleStrategy } from './google/google.strategy';
-import { Repository } from 'typeorm';
 
 @Module({
   imports: [
-    ConfigModule,
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forFeature([User]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -26,19 +25,6 @@ import { Repository } from 'typeorm';
     RedisModule,
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    {
-      provide: GoogleStrategy,
-      useFactory: (
-        configService: ConfigService,
-        jwtService: JwtService,
-        userRepo: Repository<User>,
-      ) => {
-        return new GoogleStrategy(userRepo, jwtService, configService);
-      },
-      inject: [ConfigService, JwtService, getRepositoryToken(User)],
-    },
-  ],
+  providers: [AuthService, GoogleStrategy],
 })
 export class AuthModule {}

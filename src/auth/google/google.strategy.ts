@@ -14,16 +14,12 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
     private jwtService: JwtService,
-    private configService: ConfigService,
+    configService: ConfigService,
   ) {
     super({
-      // clientID: configService.get<string>('GOOGLE_CLIENT_ID')!,
-      // clientSecret: configService.get<string>('GOOGLE_CLIENT_ID')!,
-      // callbackURL: configService.get<string>('GOOGLE_CLIENT_ID')!,
-      clientID:
-        '1012568570784-e9dru2ntiu15g8d806sp3ll5sfd8kgce.apps.googleusercontent.com',
-      clientSecret: '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',
-      callbackURL: 'http://localhost:3000/api/v1/auth/google/callback',
+      clientID: configService.get('GOOGLE_CLIENT_ID')!,
+      clientSecret: configService.get('GOOGLE_CLIENT_SECRET')!,
+      callbackURL: configService.get('GOOGLE_CALLBACK_URL'),
       scope: ['email', 'profile'],
       passReqToCallback: true,
       authorizationURL:

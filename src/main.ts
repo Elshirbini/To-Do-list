@@ -73,6 +73,13 @@ async function bootstrap() {
         res.raw.end(data);
       };
       req.res = res;
+
+      // if (!req.connection) {
+      //   req.connection = {};
+      // }
+      // if (typeof req.connection.encrypted === 'undefined') {
+      //   req.connection.encrypted = false;
+      // }
       done();
     });
 
