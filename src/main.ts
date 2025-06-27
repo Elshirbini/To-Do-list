@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
 import { NestFactory } from '@nestjs/core';
@@ -14,6 +17,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: true }),
+    { logger: ['error', 'warn', 'log', 'debug'] },
   );
   await app.register(
     fastifyHelmet as any,
@@ -57,9 +61,36 @@ async function bootstrap() {
     }),
   );
 
-  // app.get((res: FastifyReply) => {
-  //   res.send(`<a href='/google/auth'>Sign in with google</a>`);
-  // });
+  app
+    .getHttpAdapter()
+    .getInstance()
+    .addHook('onRequest', (req: any, res: any, done: any) => {
+      // Patch Fastify's response to behave more like Express
+      res.setHeader = (key: string, value: string) => {
+        return res.raw.setHeader(key, value);
+      };
+      res.end = (data?: any) => {
+        res.raw.end(data);
+      };
+      req.res = res;
+      done();
+    });
+
+  app
+    .getHttpAdapter()
+    .getInstance()
+    .get('/', (req, reply) => {
+      reply.type('text/html').send(`
+        <html>
+          <body>
+            <h2>Login with Google</h2>
+            <a href="/api/v1/auth/google">
+              <button style="padding: 10px 20px; font-size: 16px;">Login with Google</button>
+            </a>
+          </body>
+        </html>
+      `);
+    });
 
   await app.listen(3000);
 }

@@ -11,7 +11,7 @@ import { User } from 'src/user/entities/user.entity';
 import { Raw, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { sendEmail } from 'src/utils/send-mail.util';
 import { generateOTP } from 'src/utils/generate-otp.util';
 import { RedisService } from 'src/redis/redis.service';
@@ -20,6 +20,7 @@ import { EmailDto } from './dto/email.dto';
 import { PasswordDto } from './dto/password.dto';
 import { randomBytes, createHash } from 'crypto';
 import { CodeDto } from './dto/code.dto';
+import { GoogleUser } from './interfaces/google-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +30,43 @@ export class AuthService {
     private jwtService: JwtService,
     private redisService: RedisService,
   ) {}
+
+  async googleAuthRedirect(
+    req: FastifyRequest & { user: GoogleUser },
+    res: FastifyReply,
+  ) {
+    const { token, role } = req.user;
+    console.log(role);
+
+    if (!req.user) {
+      return res.redirect(
+        `http://localhost:5173/auth-error?message=${encodeURIComponent(
+          'User not found. Please sign up first',
+        )}`,
+      );
+    }
+
+    if (res.sent) return;
+
+    res
+      .cookie('accessToken', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'prod' ? true : false,
+        path: '/',
+        maxAge: 60 * 60 * 1024,
+      })
+      .header(
+        'location',
+        `${
+          process.env.NODE_ENV === 'dev'
+            ? process.env.FRONTEND_URL
+            : process.env.FRONTEND_URL_PROD
+        }/dashboard/${role}`,
+      )
+      .status(302);
+
+    return res.send();
+  }
 
   async login(userData: LoginDto, res: FastifyReply) {
     const user = await this.userRepo.findOneBy({ email: userData.email });

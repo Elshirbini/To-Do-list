@@ -6,19 +6,39 @@ import {
   Patch,
   Param,
   HttpCode,
+  Get,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/sign-up.dto';
 import { LoginDto } from './dto/login.dto';
-import { FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { OtpDto } from './dto/otp.dto';
 import { EmailDto } from './dto/email.dto';
 import { PasswordDto } from './dto/password.dto';
 import { CodeDto } from './dto/code.dto';
+import { GoogleUser } from './interfaces/google-user.interface';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {
+    // Redirects to Google login
+  }
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  googleAuthRedirect(
+    @Req() req: FastifyRequest & { user: GoogleUser },
+    @Res() res: FastifyReply,
+  ) {
+    return this.authService.googleAuthRedirect(req, res);
+  }
 
   @Post('/login')
   login(
