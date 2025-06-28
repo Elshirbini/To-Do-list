@@ -21,6 +21,7 @@ import { PasswordDto } from './dto/password.dto';
 import { randomBytes, createHash } from 'crypto';
 import { CodeDto } from './dto/code.dto';
 import { GoogleUser } from './interfaces/google-user.interface';
+import { emailQueue } from 'src/jobs/emails/email.queue';
 
 @Injectable()
 export class AuthService {
@@ -143,21 +144,31 @@ export class AuthService {
 
     await this.redisService.del(otpDto.otp);
 
-    await sendEmail(
-      parsedData.email,
-      '✅ Account Created Successfully',
-      `
-  <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-    <h2 style="color: #28a745;">🎉 Account Created Successfully!</h2>
-    <p style="font-size: 16px; color: #333;">Hi there,</p>
-    <p style="font-size: 16px; color: #333;">
-      Your account has been created successfully. You can now log in and start using our services.
-    </p>
-    <p style="font-size: 14px; color: #666;">If you have any questions or need help, feel free to reach out to our support team.</p>
-    <hr style="margin: 30px 0;">
-    <p style="font-size: 12px; color: #aaa;">Thank you for joining us!</p>
-  </div>
-  `,
+    await emailQueue.add(
+      'emailQueue',
+      {
+        email: parsedData.email,
+        subject: '✅ Account Created Successfully',
+        html: `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+      <h2 style="color: #28a745;">🎉 Account Created Successfully!</h2>
+      <p style="font-size: 16px; color: #333;">Hi there,</p>
+      <p style="font-size: 16px; color: #333;">
+        Your account has been created successfully. You can now log in and start using our services.
+      </p>
+      <p style="font-size: 14px; color: #666;">If you have any questions or need help, feel free to reach out to our support team.</p>
+      <hr style="margin: 30px 0;">
+      <p style="font-size: 12px; color: #aaa;">Thank you for joining us!</p>
+    </div>
+    `,
+      },
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 3000,
+        },
+      },
     );
 
     return {
