@@ -12,6 +12,7 @@ import {
 import fastifyCookie from '@fastify/cookie';
 import { ValidationPipe } from '@nestjs/common';
 import fastifyHelmet from '@fastify/helmet';
+import { emailWorker } from './jobs/emails/email.worker';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -74,12 +75,6 @@ async function bootstrap() {
       };
       req.res = res;
 
-      // if (!req.connection) {
-      //   req.connection = {};
-      // }
-      // if (typeof req.connection.encrypted === 'undefined') {
-      //   req.connection.encrypted = false;
-      // }
       done();
     });
 
@@ -100,6 +95,14 @@ async function bootstrap() {
     });
 
   await app.listen(3000);
+
+  emailWorker.on('completed', (job) => {
+    console.log(`🎉 Completed job ${job.id}`);
+  });
+
+  emailWorker.on('failed', (job, err) => {
+    console.error(`❌ Failed job ${job?.id}`, err);
+  });
 }
 
 bootstrap().catch((err) => {
