@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
+import { User } from './user/entities/user.entity';
+import { Task } from './task/entities/task.entity';
 
 @Module({
   imports: [
@@ -16,8 +18,8 @@ import { RedisModule } from './redis/redis.module';
       username: 'root',
       password: process.env.DB_PASSWORD,
       database: 'task',
-      autoLoadEntities: true,
-      synchronize: true,
+      entities: [User, Task],
+      synchronize: false,
     }),
     RedisModule,
     UserModule,

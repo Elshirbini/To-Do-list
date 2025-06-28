@@ -3,7 +3,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  Index,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -12,21 +11,16 @@ import {
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  @Index()
   user_id: string;
 
   @Column()
   fullName: string;
 
   @Column({ unique: true })
-  @Index()
   email: string;
 
   @Column()
   password: string;
-
-  @Column({ nullable: true })
-  phone?: string;
 
   @Column({ type: 'enum', enum: ['admin', 'user'], default: 'user' })
   role: string;

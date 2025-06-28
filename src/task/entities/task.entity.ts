@@ -13,7 +13,6 @@ import {
 @Entity('tasks')
 export class Task {
   @PrimaryGeneratedColumn('uuid')
-  @Index()
   task_id: string;
 
   @ManyToOne(() => User, (user) => user.tasks, { onDelete: 'CASCADE' })
