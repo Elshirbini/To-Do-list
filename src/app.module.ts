@@ -13,7 +13,7 @@ import { Task } from './task/entities/task.entity';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: process.env.NODE_ENV === 'prod' ? 'mysql' : 'localhost',
       port: 3306,
       username: 'root',
       password: process.env.DB_PASSWORD,
