@@ -13,6 +13,7 @@ import fastifyCookie from '@fastify/cookie';
 import { ValidationPipe } from '@nestjs/common';
 import fastifyHelmet from '@fastify/helmet';
 import { emailWorker } from './jobs/emails/email.worker';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -61,6 +62,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.useGlobalInterceptors(new TransformInterceptor());
 
   app
     .getHttpAdapter()

@@ -12,29 +12,20 @@ export class UserService {
   ) {}
   async getAllUser() {
     const users = await this.userRepo.find({ order: { createdAt: 'DESC' } });
-    return {
-      status: 'success',
-      data: users,
-    };
+    return { users };
   }
 
   async getUser(id: string) {
     const user = await this.userRepo.findOneBy({ user_id: id });
     if (!user) throw new NotFoundException('User not found');
-    return {
-      status: 'success',
-      data: user,
-    };
+    return { user };
   }
 
   async getProfile(req: FastifyRequest) {
     const userId = req.userId;
     const user = await this.userRepo.findOneBy({ user_id: userId });
     if (!user) throw new NotFoundException('User not found');
-    return {
-      status: 'success',
-      data: user,
-    };
+    return { user };
   }
 
   async updateUser(id: string, userData: UpdateUserDto) {
@@ -48,9 +39,8 @@ export class UserService {
     const updatedUser = await this.userRepo.save(user);
 
     return {
-      status: 'success',
       message: 'User updated successfully',
-      data: updatedUser,
+      updatedUser,
     };
   }
 
@@ -59,10 +49,6 @@ export class UserService {
     if (result.affected === 0) {
       throw new NotFoundException('User not found');
     }
-    return {
-      status: 'success',
-      message: 'User deleted successfully',
-      data: null,
-    };
+    return { message: 'User deleted successfully' };
   }
 }

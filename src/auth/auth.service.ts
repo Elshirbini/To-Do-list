@@ -90,9 +90,7 @@ export class AuthService {
     });
 
     return {
-      status: 'success',
       message: 'Log in successfully',
-      data: null,
     };
   }
 
@@ -126,9 +124,7 @@ export class AuthService {
     await this.redisService.set(otp, JSON.stringify(userData), 300);
 
     return {
-      status: 'success',
       message: 'OTP sent successfully',
-      data: null,
     };
   }
 
@@ -172,9 +168,7 @@ export class AuthService {
     );
 
     return {
-      status: 'success',
       message: 'Account Created Successfully',
-      data: null,
     };
   }
 
@@ -209,9 +203,7 @@ export class AuthService {
     );
 
     return {
-      status: 'success',
       message: 'Code sent successfully',
-      data: null,
     };
   }
 
@@ -228,9 +220,8 @@ export class AuthService {
     if (!user) throw new UnauthorizedException('Code is invalid or expired');
 
     return {
-      status: 'success',
       message: 'Your Code verified successfully',
-      data: { userId: id },
+      userId: id,
     };
   }
 
@@ -251,9 +242,7 @@ export class AuthService {
     res.clearCookie('accessToken');
 
     return {
-      status: 'success',
       message: 'Your password change successfully',
-      data: null,
     };
   }
 }

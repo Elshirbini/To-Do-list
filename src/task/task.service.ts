@@ -20,9 +20,8 @@ export class TaskService {
     const task = await this.taskRepo.save(createTaskDto);
 
     return {
-      status: 'success',
       message: 'Task added successfully',
-      data: task,
+      task,
     };
   }
 
@@ -36,7 +35,7 @@ export class TaskService {
     });
     if (tasks.length === 0) throw new NotFoundException('Task not found');
 
-    return { status: 'success', data: tasks };
+    return { tasks };
   }
 
   async findOne(req: FastifyRequest, id: string) {
@@ -46,7 +45,7 @@ export class TaskService {
     });
     if (!task) throw new NotFoundException('Task not found');
 
-    return { status: 'success', data: task };
+    return { task };
   }
 
   async update(req: FastifyRequest, id: string, updateTaskDto: UpdateTaskDto) {
@@ -60,9 +59,8 @@ export class TaskService {
     Object.assign(task, updateTaskDto);
 
     return {
-      status: 'success',
       message: 'Task Updated Successfully',
-      data: this.taskRepo.save(task),
+      task: this.taskRepo.save(task),
     };
   }
 
@@ -74,6 +72,6 @@ export class TaskService {
     if (result.affected === 0) {
       throw new NotFoundException('Task not found');
     }
-    return { status: 'success', message: 'Task deleted', data: null };
+    return { message: 'Task deleted' };
   }
 }
