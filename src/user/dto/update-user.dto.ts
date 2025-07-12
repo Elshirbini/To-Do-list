@@ -1,13 +1,7 @@
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UpdateUserDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @MinLength(4)
   @MaxLength(50)
@@ -16,4 +10,12 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   phone: string;
+
+  @IsOptional()
+  @IsString()
+  imageKey: string;
+
+  @IsOptional()
+  @IsString()
+  imageUrl: string;
 }

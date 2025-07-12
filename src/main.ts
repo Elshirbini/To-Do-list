@@ -14,6 +14,7 @@ import { ValidationPipe } from '@nestjs/common';
 import fastifyHelmet from '@fastify/helmet';
 import { emailWorker } from './jobs/emails/email.worker';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import * as multipart from '@fastify/multipart';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -21,6 +22,9 @@ async function bootstrap() {
     new FastifyAdapter({ logger: true }),
     { logger: ['error', 'warn', 'log', 'debug'] },
   );
+
+  await app.register(multipart as any);
+
   await app.register(
     fastifyHelmet as any,
     {
