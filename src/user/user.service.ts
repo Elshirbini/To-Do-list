@@ -55,7 +55,7 @@ export class UserService {
 
       const result = await this.awsService.uploadFileS3(
         file.buffer,
-        '/profileImages',
+        `profileImages/${new Date().toISOString()}`,
         file.mimetype,
       );
 

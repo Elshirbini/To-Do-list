@@ -16,9 +16,9 @@ import { AuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import {
-  FileFieldsInterceptor,
+  FileInterceptor,
   MemoryStorageFile,
-  UploadedFiles,
+  UploadedFile,
 } from '@blazity/nest-file-fastify';
 
 @Controller('user')
@@ -40,16 +40,15 @@ export class UserController {
 
   @Patch(':id')
   @UseGuards(AuthGuard)
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }]))
+  @UseInterceptors(FileInterceptor('image'))
   async updateUser(
     @Param('id') id: string,
-    @UploadedFiles() files: { image?: MemoryStorageFile },
+    @UploadedFile() file: MemoryStorageFile,
     @Body() userData: UpdateUserDto,
   ) {
-    const file = files.image?.[0] as MemoryStorageFile;
-
     return this.userService.updateUser(id, file, userData);
   }
+
   @Delete(':id')
   @UseGuards(AuthGuard)
   deleteUser(@Param('id') id: string) {
